@@ -19,8 +19,9 @@ Var3 = 'fuel_economy_score'
 Var4 = 'engine_cylinders'
 NUM_EPOCHS = 20
 LEARNING_RATE = 0.0005
-NUM_VAR = 2
+VARS = [Var1, Var2, Var3, Var4] #MUST BE UPDATED FOR NUM OF VARS-----------
 TESTING_SET = 'avg_mpg'
+NUM_VAR = len(VARS)
 
 #function declaration for error loss plot
 def plot_loss(history):
@@ -54,7 +55,7 @@ df.convert_dtypes().dtypes
 #Dropping non numbers of Variables from data set
 print(f"Pre drop-na {len(df)} rows")
 df2 = df
-df2 = df.dropna(subset=[Var1, Var2]) #MUST BE UPDATED ---------------------------------
+df2 = df.dropna(subset=[Var1, Var2])
 print(f"After drop {len(df2)} rows")
 
 #Verify column types are numeric
@@ -80,7 +81,7 @@ test_labels = test_features_df.pop('avg_mpg')
 print(train_labels)
 
 #Choosing features that will be used for the Neural Network
-train_features = train_features_df[[Var1, Var2]] #MUST BE UPDATED ---------------------------
+train_features = train_features_df[[Var1, Var2]]
 print(train_features)
 
 
