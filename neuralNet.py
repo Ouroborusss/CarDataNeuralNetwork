@@ -12,6 +12,15 @@ from google.colab import auth
 from oauth2client.client import GoogleCredentials
 import io
 
+#VARIABLE DECLARATION
+Var1 = 'tailpipe_co2_in_grams_mile_ft1'
+Var2 = 'year'
+Var3 = 'fuel_economy_score'
+Var4 = 'engine_cylinders'
+NUM_EPOCHS = 20
+LEARNING_RATE = 0.0005
+NUM_VAR = 2
+
 #function declaration for error loss plot
 def plot_loss(history):
   plt.plot(history.history['loss'], label='loss')
@@ -20,12 +29,6 @@ def plot_loss(history):
   plt.ylabel('Error ')
   plt.legend()
   plt.grid(True)
-
-#VARIABLE DECLARATION
-Var1 = 'tailpipe_co2_in_grams_mile_ft1'
-Var2 = 'year'
-#Var3 = 'fuel_economy_score'
-#Var4 = 'engine_cylinders'
 
 #GOOGLE AUTH
 auth.authenticate_user()
@@ -56,8 +59,8 @@ print(f"After drop {len(df2)} rows")
 #Verify column types are numeric
 df2 = df2.astype({Var1: float})
 df2 = df2.astype({Var2: float})
-#df2 = df2.astype({Var3: float})
-#df2 = df2.astype({Var4: float})
+df2 = df2.astype({Var3: float})
+df2 = df2.astype({Var4: float})
 print(df2.dtypes)
 
 #Data set training ratios, split into different sets
@@ -79,8 +82,10 @@ print(train_labels)
 train_features = train_features_df[[Var1, Var2]]
 print(train_features)
 
+
+
 #Running nomralizer on training features
-normalizer = layers.Normalization(input_shape=[2,], axis=None)
+normalizer = layers.Normalization(input_shape=[NUM_VAR,], axis=None)
 normalizer.adapt(np.array(train_features))
 print(normalizer.mean.numpy())
 print(normalizer.get_weights())
@@ -88,7 +93,7 @@ print(normalizer.get_weights())
 #Normalized model inspection
 model = tf.keras.Sequential([
     normalizer,
-    layers.Dense(units=2),
+    layers.Dense(units=NUM_VAR),
     layers.Dense(units=1)
 ])
 model.summary()
@@ -99,7 +104,7 @@ model.predict(train_features[:10])
 #Compiling Model
 model.compile(
     #optimizer=tf.optimizers.Adam(learning_rate=0.05),
-    optimizer=tf.optimizers.Adam(learning_rate=0.0005),
+    optimizer=tf.optimizers.Adam(learning_rate=LEARNING_RATE),
     loss='mean_squared_error')
 #mean_absolute_error
 #MeanSquaredLogarithmicError
@@ -110,7 +115,7 @@ model.compile(
 history = model.fit(
     train_features,
     train_labels,
-    epochs=20,
+    epochs=NUM_EPOCHS,
     verbose=1,
     # Calculate validation results on 20% of the training data.
     validation_split = 0.2)
